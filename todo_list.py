@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# todo_list.py
+# Список задач с цветным выводом и синхронизацией с рабочим столом.
+
 import argparse
 import os
+from colorama import init, Fore, Style
 
-# пути к файлам
+init(autoreset=True)
+
 TASKS_FILE = "tasks.txt"
 DESKTOP_TASKS = os.path.expanduser("~/Рабочий стол/tasks.txt")
 
 def load_tasks():
-    """загружает задачи из файла на рабочем столе"""
     tasks = []
     if os.path.exists(DESKTOP_TASKS):
         with open(DESKTOP_TASKS, "r", encoding="utf-8") as f:
@@ -20,28 +24,27 @@ def load_tasks():
     return tasks
 
 def save_tasks(tasks):
-    """сохраняет задачи в файл на рабочем столе"""
     with open(DESKTOP_TASKS, "w", encoding="utf-8") as f:
         for task in tasks:
             f.write(task + "\n")
 
 def add_task(tasks, task):
-    """добавляет новую задачу"""
     tasks.append(task)
     save_tasks(tasks)
     print(f"задача добавлена: {task}")
 
 def list_tasks(tasks):
-    """выводит список задач с номерами"""
     if not tasks:
         print("список задач пуст")
         return
     print("список задач:")
     for i, task in enumerate(tasks, start=1):
-        print(f"{i}. {task}")
+        if task.startswith("[x]"):
+            print(f"{Fore.GREEN}{i}. {task}{Style.RESET_ALL}")
+        else:
+            print(f"{i}. {task}")
 
 def delete_task(tasks, index):
-    """удаляет задачу по номеру (начиная с 1)"""
     if not tasks:
         print("список задач пуст")
         return
@@ -53,7 +56,6 @@ def delete_task(tasks, index):
     print(f"задача удалена: {removed}")
 
 def complete_task(tasks, index):
-    """отмечает задачу как выполненную (добавляет [x])"""
     if not tasks:
         print("список задач пуст")
         return
